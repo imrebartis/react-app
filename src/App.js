@@ -1,56 +1,36 @@
 /*jshint esversion: 6 */
-
-// When our component is added to the DOM, this is called mounting, and when our component is removed from the DOM, this is called unmounting.
-
 import React from 'react';
-import ReactDOM from 'react-dom'; //we need this for mounting
+import ReactDOM from 'react-dom';
+
 class App extends React.Component {
   constructor() {
-    super(); //we need super to get our context
-    this.state = {val: 0}
-    this.update = this.update.bind(this)
+  super();
+  this.state = {increasing: false}
+}
+  update() {
+    ReactDOM.render(
+      <App val={this.props.val+1} />,
+      document.getElementById('root'))
   }
-  update(){
-    this.setState({val: this.state.val + 1})
-  }
-  componentWillMount(){
-  console.log('componentWillMount')
+  componentWillReceiveProps(nextProps){
+  this.setState({increasing: nextProps.val > this.props.val})
+}
+  shouldComponentUpdate(nextProps, nextState) {
+  return nextProps.val % 5 === 0;//update if val is a multiple of 5
 }
   render(){
-    console.log('render');
-    return <button onClick={this.update}>
-      {this.state.val * this.state.m} // multiplying by two
+    console.log(this.state.increasing)
+  return (
+    <button onClick={this.update.bind(this)}>
+      {this.props.val}
     </button>
-  }
-  componentDidMount(){
-  console.log('componentDidMount');
-  this.inc = setInterval(this.update,500)
-  }
-  componentWillUnmount(){
-  console.log('componentWillUnmount')
-  this.setState({m: 2})
+  )
+ }
+ componentDidUpdate(prevProps, prevState) {
+  console.log(`prevProps: ${prevProps.val}`)
  }
 }
 
-class Wrapper extends React.Component {
+App.defaultProps = {val: 0}
 
-      mount(){
-      //for some reason creating the new div called a doesn't work
-      ReactDOM.render(<App />, document.getElementById('root'))
-      }
-      unmount(){
-      //for some reason creating the new div called a doesn't work
-      ReactDOM.unmountComponentAtNode(document.getElementById('root'))
-       clearInterval(this.inc);
-      }
-  render(){
-    return (
-      <div>
-        <button onClick={this.mount.bind(this)}>Mount</button>
-        <button onClick={this.unmount.bind(this)}>UnMount</button>
-      </div>
-    )
-  }
-}
-
-export default Wrapper //we export Wrapper instead of App. Then Wrapper will render App.
+export default App
