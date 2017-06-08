@@ -18,13 +18,17 @@ class App extends React.Component {
 }
   render(){
     console.log('render');
-    return <button onClick={this.update}>{this.state.val}</button>
+    return <button onClick={this.update}>
+      {this.state.val * this.state.m} // multiplying by two
+    </button>
   }
   componentDidMount(){
-  console.log('componentDidMount')
+  console.log('componentDidMount');
+  this.inc = setInterval(this.update,500)
   }
   componentWillUnmount(){
   console.log('componentWillUnmount')
+  this.setState({m: 2})
  }
 }
 
@@ -32,11 +36,12 @@ class Wrapper extends React.Component {
 
       mount(){
       //for some reason creating the new div called a doesn't work
-      ReactDOM.render(<App />, document.getElementById('a'))
+      ReactDOM.render(<App />, document.getElementById('root'))
       }
       unmount(){
       //for some reason creating the new div called a doesn't work
-      ReactDOM.unmountComponentAtNode(document.getElementById('a'))
+      ReactDOM.unmountComponentAtNode(document.getElementById('root'))
+       clearInterval(this.inc);
       }
   render(){
     return (
