@@ -1,45 +1,51 @@
 /*jshint esversion: 6 */
-import React from 'react';
-import ReactDOM from 'react-dom'; //we need this import in order to make the Input component work with ref a
-class App extends React.Component {
 
-  constructor(){
-    super();
-    this.state = {a: ''}
+// When our component is added to the DOM, this is called mounting, and when our component is removed from the DOM, this is called unmounting.
+
+import React from 'react';
+import ReactDOM from 'react-dom'; //we need this for mounting
+class App extends React.Component {
+  constructor() {
+    super(); //we need super to get our context
+    this.state = {val: 0}
+    this.update = this.update.bind(this)
   }
   update(){
-    this.setState({//thanks to this the two inputs and their states can be modified in the browser separately
-      //we use two diff ways to get a reference to a component, see a and b
-      a: this.a.refs.input.value, //the input here points to the ref='input' of the Input component
-      b: this.refs.b.value
-    })
+    this.setState({val: this.state.val + 1})
   }
+  componentWillMount(){
+  console.log('componentWillMount')
+}
   render(){
-    return ( //the h1 will print out the name of the event, e.g. paste
+    console.log('render');
+    return <button onClick={this.update}>{this.state.val}</button>
+  }
+  componentDidMount(){
+  console.log('componentDidMount')
+  }
+  componentWillUnmount(){
+  console.log('componentWillUnmount')
+ }
+}
+
+class Wrapper extends React.Component {
+
+      mount(){
+      //for some reason creating the new div called a doesn't work
+      ReactDOM.render(<App />, document.getElementById('a'))
+      }
+      unmount(){
+      //for some reason creating the new div called a doesn't work
+      ReactDOM.unmountComponentAtNode(document.getElementById('a'))
+      }
+  render(){
+    return (
       <div>
-        <Input
-          ref={ component => this.a = component}
-          update={this.update.bind(this)}
-        //ref={node => this.a = node} //this was used before creating the Input component
-          //type="text"
-          //onChange={this.update.bind(this)}
-        /> {this.state.a}
-        <hr />
-        <input
-        ref="b"
-          type="text"
-          onChange={this.update.bind(this)}
-        /> {this.state.b}
+        <button onClick={this.mount.bind(this)}>Mount</button>
+        <button onClick={this.unmount.bind(this)}>UnMount</button>
       </div>
     )
   }
 }
 
-class Input extends React.Component {
-  render(){
-    return <div><input ref="input" type="text" onChange={this.props.update}/></div>
-  }
-}
-
-
-export default App
+export default Wrapper //we export Wrapper instead of App. Then Wrapper will render App.
