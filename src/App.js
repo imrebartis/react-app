@@ -3,51 +3,35 @@ import React from 'react';
 import './App.css'; //IMPORTANT: ADD THE ./ IN FRONT OF THE FILE'S NAME!!!
 
 class App extends React.Component {
-  constructor(){
-    super(); //super gives 'this' the context within our component
-    this.state = {
-      input:'/* add your jsx here */',
-      output: '',
-      err: ''
-    }
-  }
-
-  update ( e ){
-    let code = e.target.value;
-    try {
-      this.setState(
-        {
-          output: window.Babel
-          .transform(code, {presets: ['es2015', 'react']}) //saying window.babel to transform our code using these presets, and then give us that code back
-          .code,
-          err: '' //err is empty here, because it's the scenario where code doesn't fail
-        })
-    }
-    catch(err){
-      this.setState({err: err.message})
-    }
-  }
-
-
   render(){
-
-    return (//two-way binding:
-      <div>
-        <header>{this.state.err}</header>
-        <div className="container">
-          <textarea
-            onChange={this.update.bind(this)}
-            defaultValue={this.state.input}/>
-            <pre>
-              {this.state.output}
-            </pre>
-        </div>
-      </div>
+    return (
+        <Parent>
+          <div className="childA"></div>
+          <div className="childB"></div>
+        </Parent>
     )
   }
 }
 
+class Parent extends React.Component {
+  render(){
+    //the React.Children method takes as an argument the actual children and then a mapping function
+    // let items = React.Children
+    // .map(this.props.children, child => child)
 
+    // let items = React.Children.toArray(this.props.children) //mapping the children with less code
+
+    //printing out the class names of the children with forEach:
+    let items = React.Children
+      .forEach(this.props.children, child => console.log(child.props.className))
+
+    //the method below (only) returns a single child. If it's more than one child, it will throw an error.
+    // let items = React.Children.only(this.props.children)
+
+    console.log(items)
+    return null
+  }
+}
 
 
 export default App
