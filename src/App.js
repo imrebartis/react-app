@@ -68,7 +68,7 @@ NumInput.propTypes = {
 NumInput.defaultProps = {
   min: 0,
   max: 0,
-  steop: 1,
+  step: 1,
   val: 0,
   label: '',
   type: 'range'
