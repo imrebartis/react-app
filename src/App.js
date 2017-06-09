@@ -1,42 +1,77 @@
 /*jshint esversion: 6 */
 import React from 'react';
+import ReactDOM from 'react-dom';
 import './App.css'; //IMPORTANT: ADD THE ./ IN FRONT OF THE FILE'S NAME!!!
 
 class App extends React.Component {
+  constructor(){
+    super();
+    this.state = {
+      red: 0
+    }
+    this.update = this.update.bind(this)
+  }
+  update(e){
+    this.setState({
+      red: ReactDOM.findDOMNode(this.refs.red.refs.inp).value,
+    })
+  }
+
   render(){
+  //the +this.state.red coerces the value into a number
+  // we can turn the slider into numbers with type="number"
     return (
-        <Buttons>
-          <button value="A">A</button>
-          <button value="B">B</button>
-          <button value="C">C</button>
-        </Buttons>
-      )
+        <div>
+          <NumInput
+          ref="red"
+          min={0}
+          max={255}
+          step={1}
+          val={+this.state.red}
+          label="Red"
+          update={this.update} />
+        </div>
+      );
   }
 }
 
-class Buttons extends React.Component {
-  constructor(){
-    super();
-    this.state = {selected: 'None'}
-  }
-  selectItem(selected){ //this updates the state
-    this.setState({selected})
-  }
+class NumInput extends React.Component {
+
   render(){
-  // props.children is a descriptor of the children, i.e. u can only read from it
-  // that's why in order to modify it we need cloneElement    
-    let fn = child =>
-      React.cloneElement(child, {
-        onClick: this.selectItem.bind(this, child.props.value)
-      })
-    let items = React.Children.map(this.props.children, fn);
+    let label = this.props.label !== '' ?
+    <label>{this.props.label} - {this.props.val}</label> : ''
     return(
       <div>
-        <h2>You have Selected: {this.state.selected}</h2>
-        {items}
+        <input ref="inp"
+        type={this.props.type}
+        min={this.props.min}
+        max={this.props.max}
+        step={this.props.step}
+        defaultValue={this.props.val}
+        onChange={this.props.update} />
+        {label}
       </div>
     )
   }
+}
+
+NumInput.propTypes = {
+  min: React.PropTypes.number,
+  max: React.PropTypes.number,
+  step: React.PropTypes.number,
+  val: React.PropTypes.number,
+  label: React.PropTypes.string,
+  update: React.PropTypes.func.isRequired,
+  type: React.PropTypes.oneOf(['number', 'range']) //an array that accepts 'number' or 'range' as a string
+}
+
+NumInput.defaultProps = {
+  min: 0,
+  max: 0,
+  steop: 1,
+  val: 0,
+  label: '',
+  type: 'range'
 }
 
 export default App
