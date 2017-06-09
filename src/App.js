@@ -1,57 +1,53 @@
 /*jshint esversion: 6 */
 import React from 'react';
+import './App.css'; //IMPORTANT: ADD THE ./ IN FRONT OF THE FILE'S NAME!!!
 
-//The function of a higher order component (HOC) is to take in a component and return a new component:
-
-const HOC = (InnerComponent) => class extends React.Component {
+class App extends React.Component {
   constructor(){
-    super();
-    this.state = {count: 0}
+    super(); //super gives 'this' the context within our component
+    this.state = {
+      input:'/* add your jsx here */',
+      output: '',
+      err: ''
+    }
   }
-  update(){
-    this.setState({count: this.state.count + 1})
-  }
-  componentWillMount(){
-   console.log('will mount')
-  }
-  render(){
-    return (
-      <InnerComponent
-      {...this.props}
-      {...this.state}
-      update={this.update.bind(this)}
-      />
-    )
-  }
-}
 
-Class App extends React.Component {
+  update ( e ){
+    let code = e.target.value;
+    try {
+      this.setState(
+        {
+          output: window.Babel
+          .transform(code, {presets: ['es2015', 'react']}) //saying window.babel to transform our code using these presets, and then give us that code back
+          .code,
+          err: '' //err is empty here, because it's the scenario where code doesn't fail
+        })
+    }
+    catch(err){
+      this.setState({err: err.message})
+    }
+  }
+
+
   render(){
-    return (
+
+    return (//two-way binding:
       <div>
-        <Button>button</Button>
-        <hr/>
-        <LabelHOC>label</LabelHOC>
+        <header>{this.state.err}</header>
+        <div className="container">
+          <textarea
+            onChange={this.update.bind(this)}
+            defaultValue={this.state.input}/>
+            <pre>
+              {this.state.output}
+            </pre>
+        </div>
       </div>
     )
   }
 }
 
-const Button = HOC((props)) =>
- <button onClick={props.update}>{props.children} - {props.count}</button>
-class Label extends React.Component {
-  componentWillMount() {
-    console.log('label will mount')
-  }
-  render(){
-    return (
-      <label onMouseMove={this.props.update}>
-      {this.props.children} - {this.props.count>
-      </label>
-    )
-  }
-}
 
-const LabelHOC = HOC(Label)
+
 
 export default App
